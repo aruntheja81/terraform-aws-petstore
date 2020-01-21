@@ -10,45 +10,54 @@ resource "aws_api_gateway_rest_api" "api" {
 }
 
 #apigw role
-data "aws_iam_policy_document" "api_assume_role_policy_document" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["apigateway.amazonaws.com"]
+resource "aws_api_gateway_account" "apigw_account" {
+  cloudwatch_role_arn = aws_iam_role.cloudwatch.arn
+}
+
+resource "aws_iam_role" "cloudwatch" {
+  name = "api_gateway_cloudwatch_global-${var.namespace}"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "apigateway.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
     }
-  }
+  ]
+}
+EOF
 }
 
-resource "aws_iam_role" "apigw_role" {
-  name               = "cloudwatch-role-${var.namespace}"
-  path               = "/"
-  assume_role_policy = data.aws_iam_policy_document.api_assume_role_policy_document.json
-}
+resource "aws_iam_role_policy" "cloudwatch" {
+  name = "default"
+  role = aws_iam_role.cloudwatch.id
 
-data "aws_iam_policy_document" "logger_policy_document" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:*",
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents",
+                "logs:GetLogEvents",
+                "logs:FilterLogEvents"
+            ],
+            "Resource": "*"
+        }
     ]
-    resources = [
-      "arn:aws:logs:*:*:*",
-    ]
-  }
 }
-
-resource "aws_iam_policy" "logger_policy" {
-  name   = "apigw-logger-${var.namespace}"
-  path   = "/"
-  policy = data.aws_iam_policy_document.logger_policy_document.json
-}
-
-resource "aws_iam_policy_attachment" "logger_role_attachment" {
-  name       = "apigw-logger-attachment-${var.namespace}"
-  roles      = [aws_iam_role.apigw_role.name]
-  policy_arn = aws_iam_policy.logger_policy.arn
+EOF
 }
 
 resource "aws_api_gateway_account" "cloudwatch_apigw_logs" {
