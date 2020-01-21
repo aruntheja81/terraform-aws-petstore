@@ -57,7 +57,7 @@ resource "aws_default_subnet" "default_az3" {
 
 #lambda function
 resource "aws_lambda_function" "lambda_function" {
-  filename      = "${path.cwd}/dist/function.zip"
+  filename      = "${path.module}/../../dist/function.zip"
   function_name = "${var.namespace}-lambda"
   handler       = "deployment"
   role          = aws_iam_role.lambda_role.arn
