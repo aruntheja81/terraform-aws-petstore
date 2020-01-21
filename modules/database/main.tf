@@ -1,7 +1,9 @@
+data "aws_region" "current" {}
+
 resource "aws_rds_cluster" "rds_cluster" {
   cluster_identifier      = "${var.namespace}-aurora-cluster"
   engine                  = "aurora"
-  availability_zones      = ["${var.region}a","${var.region}b","${var.region}c"]
+  availability_zones      = ["${data.aws_region.current.name}a","${data.aws_region.current.name}b","${data.aws_region.current.name}c"]
   database_name           = "petstore"
   master_username         = var.rds_user
   master_password         = var.rds_password
@@ -14,4 +16,3 @@ resource "aws_rds_cluster" "rds_cluster" {
     min_capacity             = 1
   }
 }
-
