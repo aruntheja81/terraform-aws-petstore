@@ -27,5 +27,9 @@ yarn-error.log*
 .npm/
 yarn.lock
 
+# project specific files
 dist/public/
 dist/deployment
+src/server/deployment
+src/client/build.zip
+providers.tf
