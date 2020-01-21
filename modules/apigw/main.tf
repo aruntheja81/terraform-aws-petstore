@@ -11,6 +11,7 @@ resource "aws_api_gateway_rest_api" "api" {
 
 #apigw role
 resource "aws_api_gateway_account" "apigw_account" {
+  depends_on = [aws_iam_role_policy.cloudwatch]
   cloudwatch_role_arn = aws_iam_role.cloudwatch.arn
 }
 
