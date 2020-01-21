@@ -16,7 +16,6 @@ module "networking" {
 module "database" {
   source       = "./modules/database"
   namespace    = local.namespace
-  region       = var.region
   rds_user     = var.rds_user
   rds_password = var.rds_password
   sg           = module.networking.sg
