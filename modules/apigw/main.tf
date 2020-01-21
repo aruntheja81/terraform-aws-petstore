@@ -60,10 +60,6 @@ resource "aws_iam_role_policy" "cloudwatch" {
 EOF
 }
 
-resource "aws_api_gateway_account" "cloudwatch_apigw_logs" {
-  cloudwatch_role_arn = aws_iam_role.apigw_role.arn
-}
-
 resource "aws_lambda_permission" "lambda_permission_api_gateway" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
