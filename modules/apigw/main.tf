@@ -82,6 +82,12 @@ resource "aws_api_gateway_integration" "redirect_integration" {
   resource_id = aws_api_gateway_rest_api.api.root_resource_id
   http_method = aws_api_gateway_method.redirect_method.http_method 
   type = "MOCK"
+  request_templates = { "application/json" = <<-EOF
+  {
+    "statusCode" : 302
+  }
+EOF
+}
 }
 
 resource "aws_api_gateway_method_response" "redirect" {
